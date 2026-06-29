@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For You, My Love</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --r: #FF5E5E;
+      --o: #FF9A3C;
+      --y: #FFE04A;
+      --g: #52E46A;
+      --b: #4AC8FF;
+      --i: #7B78FF;
+      --v: #DC5FFF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: #030010;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: 'Dancing Script', cursive;
+    }
+
+    /* ── CANVAS STARS ─────────────────────────────── */
+    #star-canvas {
+      position: fixed; inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── AURORA BANDS ──────────────────────────────── */
+    .aurora {
+      position: fixed; inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .ab {
+      position: absolute;
+      width: 220%; height: 35%;
+      border-radius: 50%;
+      filter: blur(70px);
+    }
+    .ab1 {
+      background: linear-gradient(90deg, #FF0000 0%, #FF7700 40%, #FFFF00 100%);
+      top: 5%; left: -60%;
+      opacity: .07;
+      animation: am 22s ease-in-out infinite alternate;
+    }
+    .ab2 {
+      background: linear-gradient(90deg, #00EE44 0%, #00CCFF 50%, #0044FF 100%);
+      top: 35%; left: -40%;
+      opacity: .065;
+      animation: am 28s ease-in-out 4s infinite alternate-reverse;
+    }
+    .ab3 {
+      background: linear-gradient(90deg, #6600FF 0%, #CC00FF 50%, #FF0077 100%);
+      top: 62%; left: -50%;
+      opacity: .07;
+      animation: am 24s ease-in-out 2s infinite alternate;
+    }
+    @keyframes am {
+      from { transform: translateX(0) scaleY(1); }
+      50%  { transform: translateX(18%) scaleY(1.4); }
+      to   { transform: translateX(-8%) scaleY(.85); }
+    }
+
+    /* ── MAIN LAYOUT ───────────────────────────────── */
+    .page {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 64px 20px 100px;
+    }
+
+    /* ── EYEBROW ───────────────────────────────────── */
+    .eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: .82rem;
+      letter-spacing: .35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.38);
+      margin-bottom: 36px;
+      opacity: 0;
+      animation: fade-up .9s .3s ease forwards;
+    }
+
+    /* ── HEART ─────────────────────────────────────── */
+    .heart-wrap {
+      width: 210px; height: 210px;
+      margin-bottom: 36px;
+      animation: heartbeat 1.45s ease-in-out infinite,
+                 fade-up .9s .5s ease both;
+      filter:
+        drop-shadow(0 0 26px rgba(255, 80,120,.55))
+        drop-shadow(0 0 55px rgba(120,  0,255,.3))
+        drop-shadow(0 0 90px rgba(  0,150,255,.2));
+    }
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      14%      { transform: scale(1.13); }
+      28%      { transform: scale(1); }
+      42%      { transform: scale(1.08); }
+      56%      { transform: scale(1); }
+    }
+
+    /* ── TITLE ─────────────────────────────────────── */
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(2.4rem, 7vw, 4.2rem);
+      line-height: 1.18;
+      text-align: center;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg,
+        var(--r) 0%,
+        var(--o) 16%,
+        var(--y) 32%,
+        var(--g) 48%,
+        var(--b) 64%,
+        var(--i) 80%,
+        var(--v) 100%
+      );
+      background-size: 250% 250%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: grad-shift 5s ease-in-out infinite, fade-up .9s .7s ease both;
+    }
+    @keyframes grad-shift {
+      0%,100% { background-position: 0% 60%; }
+      50%      { background-position: 100% 40%; }
+    }
+
+    .subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      letter-spacing: .1em;
+      color: rgba(255,255,255,.38);
+      margin-bottom: 56px;
+      animation: fade-up .9s .9s ease both;
+    }
+
+    /* ── DIVIDER ───────────────────────────────────── */
+    .divider {
+      width: 220px; height: 2px;
+      background: linear-gradient(90deg,
+        var(--r), var(--o), var(--y),
+        var(--g), var(--b), var(--i), var(--v));
+      border-radius: 2px;
+      margin: 0 auto 56px;
+      opacity: .65;
+    }
+
+    /* ── POEM ──────────────────────────────────────── */
+    .poem {
+      max-width: 660px; width: 100%;
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .stanza { margin-bottom: 44px; }
+    .ln {
+      display: block;
+      font-size: clamp(1.15rem, 3.2vw, 1.48rem);
+      line-height: 1.85;
+    }
+
+    .ln-r { color: var(--r); text-shadow: 0 0 18px rgba(255, 94, 94,.65); }
+    .ln-o { color: var(--o); text-shadow: 0 0 18px rgba(255,154, 60,.65); }
+    .ln-y { color: var(--y); text-shadow: 0 0 18px rgba(255,224, 74,.65); }
+    .ln-g { color: var(--g); text-shadow: 0 0 18px rgba( 82,228,106,.65); }
+    .ln-b { color: var(--b); text-shadow: 0 0 18px rgba( 74,200,255,.65); }
+    .ln-i { color: var(--i); text-shadow: 0 0 18px rgba(123,120,255,.65); }
+    .ln-v { color: var(--v); text-shadow: 0 0 18px rgba(220, 95,255,.65); }
+
+    /* ── SIGNATURE ─────────────────────────────────── */
+    .sig-wrap { text-align: center; margin-top: 12px; }
+    .sig-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: .82rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 8px;
+    }
+    .sig {
+      font-family: 'Dancing Script', cursive;
+      font-weight: 700;
+      font-size: clamp(2.6rem, 7vw, 4.2rem);
+      background: linear-gradient(135deg,
+        var(--r), var(--o), var(--y),
+        var(--g), var(--b), var(--i), var(--v));
+      background-size: 250% 250%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: grad-shift 4.5s ease-in-out infinite;
+    }
+
+    /* ── FLOATING HEARTS ───────────────────────────── */
+    .fh {
+      position: fixed;
+      bottom: -50px;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      animation: float-up linear forwards;
+    }
+    @keyframes float-up {
+      0%   { transform: translateY(0)      rotate(0deg)   scale(1);   opacity: .9; }
+      40%  { opacity: .75; }
+      80%  { opacity: .35; }
+      100% { transform: translateY(-105vh) rotate(400deg) scale(.6);  opacity: 0; }
+    }
+
+    /* ── SPARKLES ON CLICK ─────────────────────────── */
+    .spark {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10;
+      animation: spark-pop .9s ease-out forwards;
+    }
+    @keyframes spark-pop {
+      0%   { transform: scale(0) translate(0,0);     opacity: 1; }
+      100% { transform: scale(2.8) translate(var(--tx), var(--ty)); opacity: 0; }
+    }
+
+    /* ── REVEAL ON SCROLL ──────────────────────────── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .75s ease, transform .75s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── HINT TEXT ─────────────────────────────────── */
+    .hint {
+      position: fixed;
+      bottom: 18px; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: .78rem;
+      letter-spacing: .15em;
+      color: rgba(255,255,255,.22);
+      z-index: 6;
+      pointer-events: none;
+      animation: pulse-hint 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse-hint {
+      0%,100% { opacity: .22; } 50% { opacity: .5; }
+    }
+
+    /* ── MOBILE ────────────────────────────────────── */
+    @media (max-width: 500px) {
+      .heart-wrap { width: 170px; height: 170px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Stars -->
+<canvas id="star-canvas"></canvas>
+
+<!-- Aurora -->
+<div class="aurora">
+  <div class="ab ab1"></div>
+  <div class="ab ab2"></div>
+  <div class="ab ab3"></div>
+</div>
+
+<!-- Main content -->
+<main class="page">
+
+  <p class="eyebrow">A love letter from my heart to yours</p>
+
+  <!-- ♡ Rainbow Heart SVG -->
+  <div class="heart-wrap">
+    <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%">
+            <animate attributeName="stop-color"
+              values="#FF0000;#FF7700;#FFEE00;#00CC44;#0099FF;#5500FF;#CC00FF;#FF0000"
+              dur="6s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="20%">
+            <animate attributeName="stop-color"
+              values="#FF7700;#FFEE00;#00CC44;#0099FF;#5500FF;#CC00FF;#FF0000;#FF7700"
+              dur="6s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="40%">
+            <animate attributeName="stop-color"
+              values="#FFEE00;#00CC44;#0099FF;#5500FF;#CC00FF;#FF0000;#FF7700;#FFEE00"
+              dur="6s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="60%">
+            <animate attributeName="stop-color"
+              values="#00CC44;#0099FF;#5500FF;#CC00FF;#FF0000;#FF7700;#FFEE00;#00CC44"
+              dur="6s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="80%">
+            <animate attributeName="stop-color"
+              values="#0099FF;#5500FF;#CC00FF;#FF0000;#FF7700;#FFEE00;#00CC44;#0099FF"
+              dur="6s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="100%">
+            <animate attributeName="stop-color"
+              values="#CC00FF;#FF0000;#FF7700;#FFEE00;#00CC44;#0099FF;#5500FF;#CC00FF"
+              dur="6s" repeatCount="indefinite"/>
+          </stop>
+        </linearGradient>
+        <!-- Inner glow -->
+        <radialGradient id="glow" cx="50%" cy="40%" r="50%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Main heart -->
+      <path d="M100 170 C100 170 10 110 10 58
+               C10 30 30 10 58 10
+               C72 10 86 18 100 32
+               C114 18 128 10 142 10
+               C170 10 190 30 190 58
+               C190 110 100 170 100 170 Z"
+            fill="url(#hg)"/>
+
+      <!-- Gloss overlay -->
+      <path d="M100 170 C100 170 10 110 10 58
+               C10 30 30 10 58 10
+               C72 10 86 18 100 32
+               C114 18 128 10 142 10
+               C170 10 190 30 190 58
+               C190 110 100 170 100 170 Z"
+            fill="url(#glow)"/>
+
+      <!-- Small inner heart highlight -->
+      <path d="M100 80 C100 80 75 62 75 50
+               C75 42 82 36 90 36
+               C94 36 98 39 100 42
+               C102 39 106 36 110 36
+               C118 36 125 42 125 50
+               C125 62 100 80 100 80 Z"
+            fill="rgba(255,255,255,0.18)"/>
+    </svg>
+  </div>
+
+  <h1 class="title">I Love You<br>Exceptionally</h1>
+  <p class="subtitle">beyond measure &nbsp;·&nbsp; beyond words &nbsp;·&nbsp; beyond time</p>
+
+  <div class="divider reveal"></div>
+
+  <!-- ✦ Love Poem -->
+  <div class="poem">
+
+    <div class="stanza reveal">
+      <span class="ln ln-r">In the spectrum of every color the sky has ever shown,</span>
+      <span class="ln ln-o">you are the hue my heart has always called its home.</span>
+      <span class="ln ln-y">Warm as the amber of a quiet sunrise glow,</span>
+      <span class="ln ln-g">alive as the green where tender wildflowers grow.</span>
+    </div>
+
+    <div class="stanza reveal">
+      <span class="ln ln-b">Deep as the ocean beneath an open sky of blue,</span>
+      <span class="ln ln-i">vast as the indigo stretched between the stars —</span>
+      <span class="ln ln-v">that is the love I carry, whole and true,</span>
+      <span class="ln ln-r">a love no distance, no season, no world can mar.</span>
+    </div>
+
+    <div class="stanza reveal">
+      <span class="ln ln-o">You are the reason every dawn arrives with grace,</span>
+      <span class="ln ln-y">the quiet warmth beneath each ordinary day.</span>
+      <span class="ln ln-g">In you I find the color every rainbow chased —</span>
+      <span class="ln ln-b">a beauty more than any word could ever say.</span>
+    </div>
+
+    <div class="stanza reveal">
+      <span class="ln ln-i">So here, with every color that the universe can lend,</span>
+      <span class="ln ln-v">with every hue the light of love can name —</span>
+      <span class="ln ln-r">I paint these words across the sky, and tend</span>
+      <span class="ln ln-o">this heart that burns for you, and will not dim or tame.</span>
+    </div>
+
+  </div>
+
+  <div class="divider reveal"></div>
+
+  <!-- Signature -->
+  <div class="sig-wrap reveal" style="margin-top: 44px;">
+    <p class="sig-label">forever &amp; always, yours</p>
+    <p class="sig">Your Loving Husband &nbsp;♡</p>
+  </div>
+
+</main>
+
+<!-- Interaction hint -->
+<p class="hint">✦ tap anywhere for magic ✦</p>
+
+<script>
+  /* ── STAR FIELD ──────────────────────────────────── */
+  const cvs = document.getElementById('star-canvas');
+  const ctx = cvs.getContext('2d');
+
+  let W = 0, H = 0;
+  const STARS = [];
+
+  function resize() {
+    W = cvs.width  = window.innerWidth;
+    H = cvs.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 240; i++) {
+    STARS.push({
+      x: Math.random(),
+      y: Math.random(),
+      r: Math.random() * 1.4 + 0.25,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * 0.006 + 0.003
+    });
+  }
+
+  function drawStars(t) {
+    ctx.clearRect(0, 0, W, H);
+    for (const s of STARS) {
+      const a = (Math.sin(t * s.speed * 6 + s.phase) + 1) / 2 * 0.7 + 0.08;
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(drawStars);
+  }
+  requestAnimationFrame(drawStars);
+
+  /* ── SCROLL REVEAL ───────────────────────────────── */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const siblings = [...el.parentElement.querySelectorAll('.reveal')];
+        const idx = siblings.indexOf(el);
+        el.style.transitionDelay = `${idx * 0.1}s`;
+        el.classList.add('visible');
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ── FLOATING HEARTS ─────────────────────────────── */
+  const FH_COLORS = ['#FF5E5E','#FF9A3C','#FFE04A','#52E46A','#4AC8FF','#7B78FF','#DC5FFF'];
+  const FH_EMOJI  = ['♡','♡','♡','♡','♡','❤','💛','💙','💜','💚'];
+
+  function spawnFloatHeart() {
+    const el = document.createElement('div');
+    el.className = 'fh';
+    el.textContent = FH_EMOJI[Math.floor(Math.random() * FH_EMOJI.length)];
+    const size  = Math.random() * 18 + 9;
+    const dur   = Math.random() * 7  + 7;
+    const left  = Math.random() * 100;
+    const color = FH_COLORS[Math.floor(Math.random() * FH_COLORS.length)];
+
+    el.style.cssText = `
+      left: ${left}vw;
+      font-size: ${size}px;
+      color: ${color};
+      text-shadow: 0 0 10px ${color};
+      animation-duration: ${dur}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), dur * 1000 + 200);
+  }
+
+  setInterval(spawnFloatHeart, 700);
+  // Pre-populate
+  for (let i = 0; i < 6; i++) setTimeout(spawnFloatHeart, i * 300);
+
+  /* ── SPARKLES ON CLICK / TAP ─────────────────────── */
+  const SPARK_COLORS = ['#FF5E5E','#FF9A3C','#FFE04A','#52E46A','#4AC8FF','#7B78FF','#DC5FFF'];
+  const SPARK_COUNT  = 14;
+
+  function burst(x, y) {
+    for (let i = 0; i < SPARK_COUNT; i++) {
+      const el = document.createElement('div');
+      el.className = 'spark';
+      const angle = (i / SPARK_COUNT) * Math.PI * 2;
+      const dist  = Math.random() * 55 + 20;
+      const size  = Math.random() * 7 + 4;
+      const color = SPARK_COLORS[i % SPARK_COLORS.length];
+
+      el.style.cssText = `
+        left: ${x}px; top: ${y}px;
+        width: ${size}px; height: ${size}px;
+        background: ${color};
+        box-shadow: 0 0 8px ${color};
+        --tx: ${(Math.cos(angle) * dist).toFixed(1)}px;
+        --ty: ${(Math.sin(angle) * dist).toFixed(1)}px;
+        animation-duration: ${Math.random() * 0.4 + 0.7}s;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1200);
+    }
+
+    // Extra: a small heart at click point
+    const h = document.createElement('div');
+    h.textContent = '♡';
+    h.style.cssText = `
+      position: fixed; left: ${x - 10}px; top: ${y - 10}px;
+      font-size: 20px; color: ${SPARK_COLORS[Math.floor(Math.random()*7)]};
+      z-index: 10; pointer-events: none;
+      animation: spark-pop .8s ease-out forwards;
+      --tx: 0px; --ty: -25px;
+    `;
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 900);
+  }
+
+  document.addEventListener('click', e => burst(e.clientX, e.clientY));
+  document.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    burst(t.clientX, t.clientY);
+  }, { passive: true });
+</script>
+</body>
+</html>
